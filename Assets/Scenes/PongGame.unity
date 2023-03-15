@@ -785,6 +785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf50c5748f81d43fcbf3e5db372c0689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  expoPrefab: {fileID: 8624062046553687581, guid: 3c2f7afc2c551415dafdcc84ea8e93a4, type: 3}
   txtScoreLeft: {fileID: 1420068889}
   txtScoreRight: {fileID: 788424152}
   speed: 6

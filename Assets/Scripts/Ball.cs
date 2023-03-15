@@ -3,6 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 public class Ball : MonoBehaviour {
+  public GameObject expoPrefab;
   public TextMeshProUGUI txtScoreLeft;
   public TextMeshProUGUI txtScoreRight;
 
@@ -46,6 +47,8 @@ public class Ball : MonoBehaviour {
 
   void OnCollisionEnter2D(Collision2D c) {
     if (c.gameObject.transform.tag.StartsWith("Paddle")) {
+      var expo = Instantiate(expoPrefab, c.contacts[0].point, Quaternion.identity);
+      Destroy(expo, 1.0f);
       audioSrc.Play();
       dir.x *= -1;
     }
