@@ -3,6 +3,8 @@ using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 public class Ball : MonoBehaviour {
+  public GameObject uiStart;
+  public GameObject uiGameOver;
   public GameObject expoPrefab;
   public TextMeshProUGUI txtScoreLeft;
   public TextMeshProUGUI txtScoreRight;
@@ -15,13 +17,26 @@ public class Ball : MonoBehaviour {
   private Vector2 origPos;
   private AudioSource audioSrc;
 
-  // Start is called before the first frame update
+  private void Awake() {
+    uiStart.SetActive(true);
+    uiGameOver.SetActive(false);
+  }
+
   void Start() {
     scoreLeft = 0;
     scoreRight = 0;
     txtScoreLeft.text = "0";
     txtScoreRight.text = "0";
     origPos = transform.position;
+    audioSrc = GetComponent<AudioSource>();
+    audioSrc.clip = Resources.Load<AudioClip>("Ping");
+    Game.isPlaying = false;
+  }
+
+  public void Play() {
+    transform.position = origPos;
+    Game.isPlaying = true;
+    uiStart.SetActive(false);
     float result = Random.Range(0f, 1f);
     if (result < 0.5) {
       dir = Vector2.left;
@@ -36,13 +51,20 @@ public class Ball : MonoBehaviour {
     else {
       dir.y = -1;
     }
-    audioSrc = GetComponent<AudioSource>();
-    audioSrc.clip = Resources.Load<AudioClip>("Ping");
   }
 
-  // Update is called once per frame
+  public void Restart() {
+    scoreLeft = scoreRight = 0;
+    txtScoreLeft.text = "0";
+    txtScoreRight.text = "0";
+    uiGameOver.SetActive(false);
+    Play();
+  }
+
   void Update() {
-    transform.Translate(dir * speed * Time.deltaTime);
+    if (Game.isPlaying) {
+      transform.Translate(dir * speed * Time.deltaTime);
+    }
   }
 
   void OnCollisionEnter2D(Collision2D c) {
@@ -56,16 +78,27 @@ public class Ball : MonoBehaviour {
       dir.y *= -1;
     }
     else if (c.gameObject.CompareTag("Left Boundary")) {
-      print("right scores");
       scoreRight++;
       txtScoreRight.text = scoreRight.ToString();
-      transform.position = origPos;
+      if (scoreRight >= 2) {
+        uiGameOver.SetActive(true);
+        Game.isPlaying = false;
+      }
+      else {
+        transform.position = origPos;
+      }
     }
     else if (c.gameObject.CompareTag("Right Boundary")) {
-      print("left scores");
       scoreLeft++;
       txtScoreLeft.text = scoreLeft.ToString();
-      transform.position = origPos;
+
+      if (scoreLeft >= 2) {
+        Game.isPlaying = false;
+        uiGameOver.SetActive(true);
+      }
+      else {
+        transform.position = origPos;
+      }
     }
   }
 }
